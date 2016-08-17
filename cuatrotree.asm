@@ -14,9 +14,12 @@
   global ctIter_get
   global ctIter_valid
 
-  %define ctSize, 12
+  %EQU ctSize, 12
   %EQU offSet_size, 8
   %EQU offset_root, 0 
+  %EQU Size_P, 8
+  %EQU offset_value, 8
+  %EQU offset_child, 21
  
 section .text
 
@@ -41,7 +44,58 @@ ct_new:
 ; =====================================
 ; void ct_delete(ctTree** pct);
 ct_delete:
+                                    ;rdi = oct que es el puntero a puntero a  ctTree
+    mov rsi, [rdi]                  ;rsi es el puntero a ctTree
+    mov rdi, [rsi+offset_root]      ;rdi es el puntero a la raiz
+    call destruir
+
+    ret
+
+; =====================================
+; void destruir(ctNode_t* pct);
+destruir:
+                      ;rdi = pct que es el puntero al Nodo
+    push rbp          ;
+    mov rbp, rsp      ;
+    push rbx          ;A
+    push r12          ;D
+    push r13          ;A
+    push r14          ;D
+    push r15          ;A
+
+    .casoNULL:
+        cmp pct, 0    ; veo si es 0 el puntero
+        je .fin       ; si lo es me salgo de la func
+
+    .casoNoNull:
+        mov r12, 4    ; r12 lo uso de contador que voy a recorrer los hijos, voy a llamar uan funcion y 
+                      ; no quiero q se me cambie
+        mov rbx, rdi  ; rbx ahora es el puntero al nodo que estoy destruyendo
+        .ciclo:
+            lea r15, [rbx + r12*Size_P + offset_child ]  ; r15 ahora es el puntero al nodo hijo correspondiente
+            mov rdi, r15                                 ; rdi ahora tamb lo es (=r15)
+            call destruir
+            sub r12, 1                                   ;decremento el contador
+            cmp r12, 0                                   ; si no es 0 todavia salto a ciclo nuevamente
+            jne .ciclo
+
+                                     ; SALI DEL CICLO EN ESTE PUNTO ASI Q LIMPIAMOS EL PUNTERO PCT que lo tenemos en rbx
+        
+        mov rdi, rbx                                     ; muevo a rdi el puntero pct y lo libero
+        call free
+        mov qword [rdi], 0                                ; pongo en cero dicho puntero
+
+
+    .fin:
+        pop r15
+        pop r14
+        pop r13
+        pop r12
+        pop rbx
+
+        pop rbp
         ret
+
 
 ; ; =====================================
 ; ; void ct_aux_print(ctNode* node);

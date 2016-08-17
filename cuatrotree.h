@@ -15,10 +15,10 @@ typedef struct ctTree_t {
 
 typedef struct ctNode_t {
   struct ctNode_t* father;  	// 8 bytes
-  uint32_t value[NODESIZE];		// 4 bytes
+  uint32_t value[NODESIZE];		// 4*3 = 12 bytes
   uint8_t len;					// 1 byte
-  struct ctNode_t* child[NODESIZE+1]; // 8 bytes
-} __attribute__((__packed__)) ctNode; // total 21 bytes
+  struct ctNode_t* child[NODESIZE+1]; // 8*4 = 32 bytes
+} __attribute__((__packed__)) ctNode; // total 53 bytes
 
 typedef struct ctIter_t { 		
   ctTree* tree;					// 8 bytes
@@ -39,12 +39,25 @@ void ct_new(ctTree** pct);
   ct->size = 0;
 }*/
 
+void destruir(ctNode_t* n){
+	int i=0;
+	if(n!=NULL){
+		while(i<4){
+			destruir(child[i]);
+			i++;
+		}
+		free(n);
+	}
+	n = NULL;
+}
+
 void ct_delete(ctTree** pct);
-/*{
-  ctTree* ct = *pct;
-  free(ct->root);
+{
+  ctTree* ct = *pct;	
+  destruir(ct->root);
   free(ct);
-}*/
+  ct = NULL;
+}
 void ct_add(ctTree* ct, uint32_t value);
 
 void ct_print(ctTree* ct, FILE *pFile);
