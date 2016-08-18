@@ -38,7 +38,7 @@ void ct_new(ctTree** pct);
   ct->root = NULL;
   ct->size = 0;
 }*/
-
+/*
 void destruir(ctNode_t* n){
 	int i=0;
 	if(n!=NULL){
@@ -49,15 +49,15 @@ void destruir(ctNode_t* n){
 		free(n);
 	}
 	n = NULL;
-}
+}*/
 
 void ct_delete(ctTree** pct);
-{
+/*{
   ctTree* ct = *pct;	
   destruir(ct->root);
   free(ct);
   ct = NULL;
-}
+}*/
 void ct_add(ctTree* ct, uint32_t value);
 
 void ct_print(ctTree* ct, FILE *pFile);

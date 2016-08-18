@@ -14,12 +14,12 @@
   global ctIter_get
   global ctIter_valid
 
-  %EQU ctSize, 12
-  %EQU offSet_size, 8
-  %EQU offset_root, 0 
-  %EQU Size_P, 8
-  %EQU offset_value, 8
-  %EQU offset_child, 21
+  %define ctSize 12
+  %define offSet_size 8
+  %define offSet_root 0 
+  %define Size_P 8
+  %define offSet_value 8
+  %define offSet_child 21
  
 section .text
 
@@ -36,7 +36,7 @@ ct_new:
    
     mov rdi, [rbx]                    ; rdi ahora es un puntero directo al ctree
     mov qword [rdi+offSet_root], 0 		;pongo como nullo el puntero a la raiz del ctree
-    mov word [rdi+offset_size], 0     ; pongo que el tamaño del ctTree sea 0
+    mov word [rdi+offSet_size], 0     ; pongo que el tamaño del ctTree sea 0
     
     pop rbx                           ; restablesco rbx    
     ret
@@ -46,7 +46,7 @@ ct_new:
 ct_delete:
                                     ;rdi = oct que es el puntero a puntero a  ctTree
     mov rsi, [rdi]                  ;rsi es el puntero a ctTree
-    mov rdi, [rsi+offset_root]      ;rdi es el puntero a la raiz
+    mov rdi, [rsi+offSet_root]      ;rdi es el puntero a la raiz
     call destruir
 
     ret
@@ -59,12 +59,10 @@ destruir:
     mov rbp, rsp      ;
     push rbx          ;A
     push r12          ;D
-    push r13          ;A
-    push r14          ;D
     push r15          ;A
 
     .casoNULL:
-        cmp pct, 0    ; veo si es 0 el puntero
+        cmp rdi, 0    ; veo si es 0 el puntero
         je .fin       ; si lo es me salgo de la func
 
     .casoNoNull:
@@ -72,7 +70,7 @@ destruir:
                       ; no quiero q se me cambie
         mov rbx, rdi  ; rbx ahora es el puntero al nodo que estoy destruyendo
         .ciclo:
-            lea r15, [rbx + r12*Size_P + offset_child ]  ; r15 ahora es el puntero al nodo hijo correspondiente
+            lea r15, [rbx + r12*Size_P + offSet_child ]  ; r15 ahora es el puntero al nodo hijo correspondiente
             mov rdi, r15                                 ; rdi ahora tamb lo es (=r15)
             call destruir
             sub r12, 1                                   ;decremento el contador
@@ -88,8 +86,6 @@ destruir:
 
     .fin:
         pop r15
-        pop r14
-        pop r13
         pop r12
         pop rbx
 
