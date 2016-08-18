@@ -61,6 +61,7 @@ destruir:
     push r12          ;D
     push r15          ;A
 
+
     .casoNULL:
         cmp rdi, 0    ; veo si es 0 el puntero
         je .fin       ; si lo es me salgo de la func
