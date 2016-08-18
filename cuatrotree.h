@@ -32,14 +32,23 @@ typedef struct ctIter_t {
 
 void ct_new(ctTree** pct);
 /*
+//CODIGO EN C DE LO QUE ESTA IMPLEMENTADO EN ASSMEBLER
+
 {
   *pct = malloc(sizeof(ctTree));
   ctTree* ct = *pct;
   ct->root = NULL;
   ct->size = 0;
+}
+
+
 }*/
+
+void ct_delete(ctTree** pct);
 /*
-void destruir(ctNode_t* n){
+//CODIGO EN C DE LO QUE ESTA IMPLEMENTADO EN ASSMEBLER
+* 
+* void destruir(ctNode_t* n){
 	int i=0;
 	if(n!=NULL){
 		while(i<4){
@@ -49,15 +58,16 @@ void destruir(ctNode_t* n){
 		free(n);
 	}
 	n = NULL;
-}*/
 
-void ct_delete(ctTree** pct);
-/*{
+  {
   ctTree* ct = *pct;	
   destruir(ct->root);
   free(ct);
   ct = NULL;
 }*/
+
+
+
 void ct_add(ctTree* ct, uint32_t value);
 
 void ct_print(ctTree* ct, FILE *pFile);
@@ -65,13 +75,41 @@ void ct_print(ctTree* ct, FILE *pFile);
 
 /** Funciones de Iterador de CuatroTree **/
 
+
+
 ctIter* ctIter_new(ctTree* ct);
+/*
+ CODIGO EN C D LO QUE ESTA  IMPLEMENTADO EN ASEMBLER
+	ctIter* res ;
+	res = malloc(sizeof(ctIter));
+	res -> tree = ct;
+	res-> node = NULL;
+	res->current = 0;
+	res->count = 0; 
+	
+ */
 
 void ctIter_delete(ctIter* ctIt);
+/*
+ CODIGO EN C DE LO QUE ESTA IMPLEMENTADO EN ASEMBLER
+ 
+	free (ctIt)
+ */
+
 
 void ctIter_first(ctIter* ctIt);
+/*
+ CODIGO EN C DE LO QUE ESTA IMPLMENTADO EN ASEMBLER
+ 
+	ctTree * ct = ctIt -> tree;
+	ctNode * n = ct -> root;
+	if( n != NULL) while(n->child [0] != NULL) n = n->child [0];   // salgo de este while con el nodo que tiene el menor  dato
+	ctIt->node =  n ;
+ 
+ */
 
 void ctIter_next(ctIter* ctIt);
+
 
 uint32_t ctIter_get(ctIter* ctIt);
 
