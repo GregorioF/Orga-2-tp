@@ -110,8 +110,39 @@ void ctIter_first(ctIter* ctIt);
 
 void ctIter_next(ctIter* ctIt);
 
+/*
+ * up(ctIter* ctIt){
+	 * 	ctNode* n = ctIt->node;
+	 *  uint32_t v = n->value[ctIt->current-1];
+	 * 	while( n->value [2] < v) n = n->father; // salgo del while en el nodo donde se va a tener  qu eubicar el iterador
+	 * 	int i =0;
+	 * while( n->value[i] < v){
+	 * 			 i ++;
+	 * }
+	 * ctIt->node = n ;
+	 * ctIt ->current = i;  	 
+	 *		 
+ * }
+ * 
+ * next{
+ *		ctIt -> current +=1;
+ *		ctNode * n = ctIt->node;
+ *		if( n->child[ctIt->current] == NULL ){
+ *				if(n->len < ctIt->current) up(ctIt);
+ *				
+ *		 }
+ *		 else{
+ *			down(ctIt);
+ *		}
+ *		ctIt -> count +=1;
+ *	}
+ */
+
 
 uint32_t ctIter_get(ctIter* ctIt);
+/*
+	ctIt->node->value[ctIt->current];
+ */
 
 uint32_t ctIter_valid(ctIter* ctIt);
 

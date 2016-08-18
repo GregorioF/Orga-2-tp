@@ -21,9 +21,10 @@ int main (void){
 
     ct_add(ct, 50);
     ct_add(ct, 1);
-    ct_add(ct,100);
-    ct_add(ct , 25);
+    ct_add(ct, 100);
+    ct_add(ct, 25);
     ct_add(ct, 10);
+
     // los esta agregando piola
 
     ct_delete(&ct);

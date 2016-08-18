@@ -25,7 +25,8 @@
 	; define sobre nodos
   %define offSet_value 8
   %define offSet_child 21
-
+  %define Size_Value 4
+ 
 	; define sobre iterCt
   %define Size_It 21
   %define offset_tree 0
@@ -57,11 +58,12 @@ ct_new:
 ; =====================================
 ; void ct_delete(ctTree** pct);
 ct_delete:
-                                    ;rdi = oct que es el puntero a puntero a  ctTree
+    sub rsp, 8                            ;rdi = oct que es el puntero a puntero a  ctTree
     mov rsi, [rdi]                  ;rsi es el puntero a ctTree
     mov rdi, [rsi+offSet_root]      ;rdi es el puntero a la raiz
     call destruir
 
+	add rsp, 8
     ret
 
 ; =====================================
@@ -73,7 +75,7 @@ destruir:
     push rbx          ;A
     push r12          ;D
     push r15          ;A   SEG FAULT AL HACER ESTE PUSH!!! PORQUE????????????????
-  
+	sub rsp, 8
 
 
     .casoNULL:
@@ -81,25 +83,26 @@ destruir:
         je .fin       									; si lo es me salgo de la func
 
     .casoNoNull:
-        mov r12, 4    									; r12 lo uso de contador que voy a recorrer los hijos, voy a llamar uan funcion y 
+        mov r12, 0    									; r12 lo uso de contador que voy a recorrer los hijos, voy a llamar uan funcion y 
                       									; no quiero q se me cambie
         mov rbx, rdi  									; rbx ahora es el puntero al nodo que estoy destruyendo
         .ciclo:
-            lea r15, [rbx + r12*Size_P + offSet_child ] ; r15 ahora es el puntero al nodo hijo correspondiente
-            mov rdi, r15                                ; rdi ahora tamb lo es (=r15)
+            lea r15, [rbx + r12*Size_P + offSet_child ] ; r15 ahora es la direccion del puntero puntero al nodo hijo correspondiente
+            mov rdi, [r15]                                ; rdi ahora tamb lo es (=r15)
             call destruir
-            sub r12, 1                                  ;decremento el contador
-            cmp r12, 0                                  ; si no es 0 todavia salto a ciclo nuevamente
+            inc r12
+            ;sub r12, 1                                  ;decremento el contador
+            cmp r12, 4                                  ; si no es 0 todavia salto a ciclo nuevamente
             jne .ciclo
 
 														; SALI DEL CICLO EN ESTE PUNTO ASI Q LIMPIAMOS EL PUNTERO PCT que lo tenemos en rbx
         
         mov rdi, rbx                                    ; muevo a rdi el puntero pct y lo libero
         call free
-        mov qword [rdi], 0                              ; pongo en cero dicho puntero
-
+       ; mov qword [rdi], 0                              ; pongo en cero dicho puntero
 
     .fin:
+		add rsp, 8
         pop r15
         pop r12
         pop rbx
@@ -145,7 +148,7 @@ ctIter_delete:
 ctIter_first:
 						; en rdi tengo el punteor al it
 	mov rsi, [rdi+offset_tree]  			; en rsi tengo el puntero a arbol
-	mov rsi, [rsi+offset_root]				; en rsi tengo el punteor al primer nodo
+	mov rsi, [rsi+offSet_root]				; en rsi tengo el punteor al primer nodo
 	
 	cmp rsi, 0								; me fijo si es nulla la raiz, y si lo es ya me vuelvo, nothing to do here
 	je .fin
@@ -153,7 +156,7 @@ ctIter_first:
 	mov rcx, rsi 							; tengo en rcx el nodo actual
 	.ciclo:
 		mov rax, rcx 						; pongo guardo el nodo actual en rax
-		mov rcx, [rax+offset_child] 		; pongo en rcx el primer hijo
+		mov rcx, [rax+offSet_child] 		; pongo en rcx el primer hijo
 		
 		cmp rcx, 0 							; si es null el primer hijo me salgo del ciclo y queda el ultimo nodo valido en rax
 		jne .ciclo
@@ -165,11 +168,15 @@ ctIter_first:
 ; =====================================
 ; void ctIter_next(ctIter* ctIt);
 ctIter_next:
-        ret
+	
 
 ; =====================================
 ; uint32_t ctIter_get(ctIter* ctIt);
 ctIter_get:
+				;rdi = ctIt que es un puntero a mi iterador
+        mov cl, [rsi+offset_current] 						; en cl tengo mi current, lo guardo ahi para poder usar el direccionamiento q intel nos da 
+        mov rsi, [rdi + offset_nodo]  						; rsi ahora es un puntero al nodo en el que estoy
+    ;    mov eax, [rsi + cl * Size_Value + offset_value ] 	; en eax tengo el valor a devolver  
         ret
 
 ; =====================================
