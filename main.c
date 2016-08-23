@@ -19,16 +19,29 @@ int main (void){
     ctTree* ct;
     ct_new(&ct);
 
-    ct_add(ct, 50);
-    ct_add(ct, 1);
-    ct_add(ct, 100);
-    ct_add(ct, 25);
     ct_add(ct, 10);
-
-    // los esta agregando piola
-
-    ct_delete(&ct);
-
+    ct_add(ct, 50);
+    ct_add(ct, 30);
+    ct_add(ct, 5);
+    ct_add(ct, 20);
+    ct_add(ct, 40);
+    ct_add(ct, 60);
+    ct_add(ct, 19);
+    ct_add(ct, 39);
+    ct_add(ct, 4);
+    
+    
+    ctIter* it;
+    it=ctIter_new(ct);
+    ctIter_first(it);
+    
+    while(ctIter_valid(it)){
+         printf("%d\n", ctIter_get(it) );
+        ctIter_next(it);
+    }
+    ct_delete(&ct); 
+    ctIter_delete(it);
+    
 
 
 

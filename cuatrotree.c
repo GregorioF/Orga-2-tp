@@ -13,6 +13,7 @@ ctNode* nuevoNodo(ctNode* father){
 void ct_add(ctTree* ct, uint32_t value) {
     if( ct->root == NULL) ct->root = nuevoNodo(NULL);
     ctNode * n= ct->root;
+    ct->size +=1;
     
     while(n->len == 3){
           uint32_t a = n->value[0];
