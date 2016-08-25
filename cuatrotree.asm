@@ -166,6 +166,8 @@ ct_print:
 
 
 	.fin:
+		mov rdi, r13
+		call free
 		pop r13
 		pop r12
 		pop rbx
