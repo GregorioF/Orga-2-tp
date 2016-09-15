@@ -1,5 +1,5 @@
 CC=c99
-CFLAGS= -Wall -Wextra -pedantic -O0 -ggdb -lm
+CFLAGS= -Wall -Wextra -pedantic -O3 -ggdb -lm
 NASM=nasm
 NASMFLAGS=-f elf64 -g -F DWARF
 

@@ -34,10 +34,11 @@ int main (void){
     ctIter* it;
     it=ctIter_new(ct);
     ctIter_first(it);
-    
+    int i = 0;
     while(ctIter_valid(it)){
          printf("%d\n", ctIter_get(it) );
         ctIter_next(it);
+        
     }
     ct_delete(&ct); 
     ctIter_delete(it);

@@ -227,13 +227,27 @@ ctIter_first:
 ; =====================================
 ; void ctIter_next(ctIter* ctIt);
 ctIter_next:
+	push rbp
+	mov rbp, rsp
+	push rbx
+	push r12
+	push r13
+	push r14
+	push r15
+	sub rsp, 8
+xor r13, r13
+xor r12, r12
 
   mov rax, [rdi + offset_tree]
-  mov eax, [rax + 8]
-  cmp   [rdi + 17], eax
-  je .invalidar                                    ; ESTO DEL PRINCIPIO ES POR SI YA RECORRI TODO QUE NO ME TIRE SEG FAULT EN CASO DE HACER SIG
+  mov r13d, [rax + offset_size]
+  mov r12d, [rdi+offset_count]
+  cmp r12, r13
+  jne .continuo                                   ; ESTO DEL PRINCIPIO ES POR SI YA RECORRI TODO QUE NO ME TIRE SEG FAULT EN CASO DE HACER SIG
+  mov qword [rdi+offset_nodo], 0
+  jmp .fin
+	
 
-                                            ; rdi = ctIt que es el puntero a mi iterador pasado por parametro;
+  .continuo:                             ; rdi = ctIt que es el puntero a mi iterador pasado por parametro;
   add byte [rdi + offset_current], 1        ; sumo uno a current
   add dword [rdi + offset_count], 1         ; le sumo ya el siguiente elemnto
   xor rcx, rcx
@@ -242,43 +256,45 @@ ctIter_next:
   
   cmp qword [rsi + rcx*Size_P + offset_child], 0   ; me fijo si el proximo hijo es null o no
   jne .bajo                                        ; si no es null voy a  tener que "bajar"
+    
     .sinHijo:									   ; si es null en cambio abarco el caso sin Hijo 
       xor r8, r8
       mov r8b, [rsi + offset_len]           ; r8b tiene ahora la longitud
       cmp cl, r8b                           ; si el current es igual al leen entonces...
-      jneg .fin                               ; si me da que la long es mas grande que el current o igual ya ta termino el prog
+      jl .fin                               ; si me da que la long es mas grande que el current no tengo porq moverme y termino
+      jmp .subo								
       
+ 
       
-      .subo:
-                                                  ; rdi = ctIt puntero a mi iterador
-                                                  ; rsi  = puntero al nodo actual ;
-                                                  ; cl = current actual del it
+      .subo:   ; rdi = ctIt puntero a mi iterador ; rsi  = puntero al nodo actual ; cl = current actual del it
+        
         sub rcx, 1
         mov edx, [rsi + rcx*Size_Value + offset_value]     ; edx tien emi ultimo valor recorrido
+          
           .ciclo:
-            mov rsi, [rsi +offset_father]         ; ahora rsi es el puntero al padre d mi anterior nodo
-            cmp  [rsi+16], edx                    ;  el magico 16 es igual a offset_value + 2 * Value_size que es igual a n->value[2]
+				mov rsi, [rsi +offset_father]         ; ahora rsi es el puntero al padre d mi anterior nodo
+				cmp  [rsi+16], edx                    ;  el magico 16 es igual a offset_value + 2 * Value_size que es igual a n->value[2]
                                                   ; y comparo con mi ultimo valor, a ver si es menor o igual
-            jneg .ciclo
+				jl .ciclo
                                                   ; cuando salgo del ciclo tnego el nodo con un valor mayor a mi ultimo valor en rsi.
           xor rcx, rcx                            ; reinicio el rcx porq tengo q buscar el nuevo current valido
+          
           .get:
-            cmp [rsi+ rcx*Size_Value +offset_value], edx  ; comparo el valor con edx
-            inc rcx                                       ; incremento rxc para la prox iter
-            jneg .get                                     ; si edx sigue siendo mayor tengo q seguir
-          sub rcx, 1                                      ; cuando salgo value[rcx-1] es el proximo elemento asi rest
+            cmp edx, [rsi+ rcx*Size_Value + offset_value]     ; comparo el valor con edx
+            jl .sigo										; si edx es mas chico ya tengo a mi current
+            add rcx, 1                                       ; sino incremento rxc para la prox iter
+            jmp .get                                    
 
-          mov [rdi + offset_nodo], rsi
-          mov [rdi + offset_current], cl                  ; actualizo el iterador con los datos correspondientes y me salgo de la func
+          .sigo:
+			  mov [rdi + offset_nodo], rsi
+			  mov [rdi + offset_current], cl                  ; actualizo el iterador con los datos correspondientes y me salgo de la func
 
-          jmp .fin
+			  jmp .fin
         
          
     
-    .bajo:
-                                                  ; rdi = ctIt puntero a mi iterador
-                                                  ;rsi = puntero al nodo actual ; 
-                                                  ; cl = current actual del it
+    .bajo:      ; rdi = ctIt puntero a mi iterador ;rsi = puntero al nodo actual ; cl = current actual del it
+        
         mov  rsi, [rsi + rcx*Size_P +offset_child]   ;rsi ahora es el puntero al hijo mas proximo
         .ciclo2:
         	cmp qword [rsi+offset_child], 0  	; me fijo si rsi tiene hijos con valorse menores
@@ -293,11 +309,15 @@ ctIter_next:
         jmp .fin
           
 
-    .invalidar:
-      mov qword [rdi+offset_nodo], 0
-      jmp .fin
-
+  
     .fin:
+		add rsp, 8
+		pop r15
+		pop r14
+		pop r13
+		pop r12
+		pop rbx 
+		pop rbp
         ret
 	
 
